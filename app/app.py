@@ -43,7 +43,7 @@ def update_washroom_status(washroom_name):
     db.washrooms.update(
         {"name": washroom_name},
         {"$set": {"status": washroom_status}},
-        {"$upsert": True}
+        True
     )
     response = app.response_class(response=json.dumps("successfully updated status for washroom:%s" % washroom_name),
                                   status=200, mimetype="application/json")
