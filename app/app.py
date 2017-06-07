@@ -67,8 +67,9 @@ def echopath_washrooms():
 def update_washroom_status_echopath(washroom_name):
     body = request.get_json()
 
-    washroom_status = body.get('status')
+    washroom_status = True if "active" in body.get('status') else False
     db = client.echopath
+
     db.locations.update(
         {"name": washroom_name},
         {
