@@ -54,6 +54,7 @@ sns = boto3.client('sns')
 phone_number = '1-617-750-4465'  # change it to your phone number
 washroom = '90SecondNorth'
 
+
 def lambda_handler(event, context):
     logger.info('Received event: ' + json.dumps(event))
     click_type = event.get('clickType')
@@ -62,19 +63,21 @@ def lambda_handler(event, context):
         sns.publish(PhoneNumber=phone_number, Message=message)
         logger.info('SMS has been sent to ' + phone_number)
         requests.post('https://hooks.slack.com/services/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',json={"text": message})
-        requests.put('http://34.210.6.35:5002/washrooms/90SecondNorth',json={"status": "closed for cleaning"})
+        requests.put('http://34.210.6.35:5002/washrooms/90SecondNorth', json={"status": "closed for cleaning"})
+        requests.put('http://34.210.6.35:5002/echopath/washrooms/90SecondNorth', json={"status": "closed for cleaning"})
     elif click_type == "DOUBLE":
         message = '%s is active' % washroom
         sns.publish(PhoneNumber=phone_number, Message=message)
         logger.info('SMS has been sent to ' + phone_number)
         requests.post('https://hooks.slack.com/services/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',json={"text": message})
-        requests.put('http://34.210.6.35:5002/washrooms/90SecondNorth',json={"status": "active"})
+        requests.put('http://34.210.6.35:5002/washrooms/90SecondNorth', json={"status": "active"})
+        requests.put('http://34.210.6.35:5002/echopath/washrooms/90SecondNorth', json={"status": "active"})
     elif click_type == "LONG":
         message = '%s is under service' % washroom
         sns.publish(PhoneNumber=phone_number, Message=message)
         logger.info('SMS has been sent to ' + phone_number)
-        requests.post('https://hooks.slack.com/services/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',json={"text": message})
-        requests.put('http://34.210.6.35:5002/washrooms/90SecondNorth',json={"status": "in service"})
+        requests.post('https://hooks.slack.com/services/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', json={"text": message})
+        requests.put('http://34.210.6.35:5002/washrooms/90SecondNorth', json={"status": "in service"})
+        requests.put('http://34.210.6.35:5002/echopath/washrooms/90SecondNorth', json={"status": "in service"})
     else:
         pass
-            
