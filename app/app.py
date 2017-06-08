@@ -66,28 +66,9 @@ def echopath_washrooms():
 @app.route('/echopath/washrooms/<washroom_name>', methods=['PUT'])
 def update_washroom_status_echopath(washroom_name):
     body = request.get_json()
-
     washroom_status = True if "active" in body.get('status') else False
     db = client.echopath
-
-    db.locations.update(
-        {"name": washroom_name},
-        {
-            "$set": {"active": washroom_status},
-            "$setOnInsert":
-                {
-                    "longitude": 268.23333740234375,
-                    "latitude": 268.23333740234375,
-                    "intersection": False,
-                    "face": "WEST",
-                    "created": "2016-10-16T15:46:49.646",
-                    "created_epoch": "1476632809646",
-                    "modified": "2016-10-16T16:14:39.093",
-                    "modified_epoch": "1476634479093"
-                }
-        },
-        True
-    )
+    db.locations.update({"name": washroom_name}, {"$set": {"active": washroom_status}})
     response = app.response_class(response=json.dumps("successfully updated status for washroom:%s" % washroom_name),
                                   status=200, mimetype="application/json")
     return response
