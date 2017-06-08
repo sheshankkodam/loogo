@@ -39,7 +39,7 @@ def update_washroom_status(washroom_name):
     body = request.get_json()
 
     washroom_status = body.get('status')
-    db = client.echopath
+    db = client.loogo
     db.washrooms.update(
         {"name": washroom_name},
         {"$set": {"status": washroom_status}},
