@@ -73,7 +73,7 @@ def update_washroom_status_echopath(washroom_name):
     db.locations.update(
         {"name": washroom_name},
         {
-            "$set": {"status": washroom_status},
+            "$set": {"active": washroom_status},
             "$setOnInsert":
                 {
                     "longitude": 268.23333740234375,
