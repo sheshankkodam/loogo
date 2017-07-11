@@ -51,8 +51,14 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 sns = boto3.client('sns')
-phone_number = '1-617-750-4465'  # change it to your phone number
+phone_numbers = ['1-617-750-4465', '1-850-291-3447']
 washroom = '90SecondNorth'
+
+
+def send_sms(message):
+    for phone_number in phone_numbers:
+        sns.publish(PhoneNumber=phone_number, Message=message)
+        logger.info('SMS has been sent to ' + phone_number)
 
 
 def lambda_handler(event, context):
@@ -60,22 +66,19 @@ def lambda_handler(event, context):
     click_type = event.get('clickType')
     if click_type == "SINGLE":
         message = '%s is closed for cleaning' % washroom
-        sns.publish(PhoneNumber=phone_number, Message=message)
-        logger.info('SMS has been sent to ' + phone_number)
+        send_sms(message)
         requests.post('https://hooks.slack.com/services/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',json={"text": message})
         requests.put('http://34.208.93.80:5002/washrooms/90SecondNorth', json={"status": "closed for cleaning"})
         requests.put('http://34.208.93.80:5002/echopath/washrooms/90SecondNorth', json={"status": "closed for cleaning"})
     elif click_type == "DOUBLE":
         message = '%s is active' % washroom
-        sns.publish(PhoneNumber=phone_number, Message=message)
-        logger.info('SMS has been sent to ' + phone_number)
+        send_sms(message)
         requests.post('https://hooks.slack.com/services/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',json={"text": message})
         requests.put('http://34.208.93.80:5002/washrooms/90SecondNorth', json={"status": "active"})
         requests.put('http://34.208.93.80:5002/echopath/washrooms/90SecondNorth', json={"status": "active"})
     elif click_type == "LONG":
         message = '%s is under service' % washroom
-        sns.publish(PhoneNumber=phone_number, Message=message)
-        logger.info('SMS has been sent to ' + phone_number)
+        send_sms(message)
         requests.post('https://hooks.slack.com/services/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', json={"text": message})
         requests.put('http://34.208.93.80:5002/washrooms/90SecondNorth', json={"status": "in service"})
         requests.put('http://34.208.93.80:5002/echopath/washrooms/90SecondNorth', json={"status": "in service"})
