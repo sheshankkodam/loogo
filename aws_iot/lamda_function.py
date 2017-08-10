@@ -60,7 +60,7 @@ echoPathUrl = 'http://34.208.93.80:5002/echopath/washrooms/'
 
 
 def handle_notifications(status_msg, battery_voltage, serial_no, color):
-    notification_msg = washroom + "is " + status_msg
+    notification_msg = washroom + " is " + status_msg
     # sms
     for phone_number in phone_numbers:
         sns.publish(PhoneNumber=phone_number, Message=notification_msg)
