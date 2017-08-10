@@ -39,10 +39,19 @@ def update_washroom_status(washroom_name):
     body = request.get_json()
 
     washroom_status = body.get('status')
+    aws_sno = body.get('aws_sno')
+    battery_voltage = body.get('battery_voltage')
     db = client.loogo
     db.washrooms.update(
         {"name": washroom_name},
-        {"$set": {"status": washroom_status}},
+        {
+            "$set":
+                {
+                    "status": washroom_status,
+                    "aws_sno": aws_sno,
+                    "battery_voltage": battery_voltage
+                }
+        },
         True
     )
     response = app.response_class(response=json.dumps("successfully updated status for washroom:%s" % washroom_name),
