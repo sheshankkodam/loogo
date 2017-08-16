@@ -55,8 +55,8 @@ phone_numbers = ['1-617-750-4465']
 washroom = 'RushHour2Mens'
 hipchat = "https://changeagents.hipchat.com/v2/room/4036142/notification?auth_token=7ShqgwAsYQ2hJoRgwcg7FagyiHONP8gnMZep326W"
 slack = 'https://hooks.slack.com/services/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'
-loogoUrl = 'http://34.208.93.80:5002/washrooms/'
-echoPathUrl = 'http://34.208.93.80:5002/echopath/washrooms/'
+loogoUrl = 'http://52.25.29.73:5002/washrooms/'
+echoPathUrl = 'http://52.25.29.73:5002/echopath/washrooms/'
 
 
 def handle_notifications(status_msg, battery_voltage, serial_no, color):
