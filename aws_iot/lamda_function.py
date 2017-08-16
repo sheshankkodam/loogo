@@ -51,36 +51,46 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 sns = boto3.client('sns')
-phone_numbers = ['1-617-750-4465', '1-850-291-3447']
-washroom = '90SecondNorth'
+phone_numbers = ['1-617-750-4465']
+washroom = 'RushHour2Mens'
+hipchat = "https://changeagents.hipchat.com/v2/room/4036142/notification?auth_token=7ShqgwAsYQ2hJoRgwcg7FagyiHONP8gnMZep326W"
+slack = 'https://hooks.slack.com/services/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'
+loogoUrl = 'http://34.208.93.80:5002/washrooms/'
+echoPathUrl = 'http://34.208.93.80:5002/echopath/washrooms/'
 
 
-def send_sms(message):
+def handle_notifications(status_msg, battery_voltage, serial_no, color):
+    notification_msg = washroom + " is " + status_msg
+    # sms
     for phone_number in phone_numbers:
-        sns.publish(PhoneNumber=phone_number, Message=message)
+        sns.publish(PhoneNumber=phone_number, Message=notification_msg)
         logger.info('SMS has been sent to ' + phone_number)
+
+    # hipchat and slack
+    requests.post(hipchat, {"color": color, "notify": "true", "message": notification_msg})
+    requests.post(slack, json={"text": notification_msg})
+
+    # echopath
+    # requests.put(echoPathUrl + washroom, json={"status": "closed for cleaning"})
+
+    # save in db
+    requests.put(loogoUrl + washroom, json={"aws_sno": serial_no, "battery_voltage": battery_voltage,
+                                            "status": status_msg})
 
 
 def lambda_handler(event, context):
     logger.info('Received event: ' + json.dumps(event))
     click_type = event.get('clickType')
+    serial_no = event.get('serialNumber')
+    battery_voltage = event.get('batteryVoltage')
     if click_type == "SINGLE":
-        message = '%s is closed for cleaning' % washroom
-        send_sms(message)
-        requests.post('https://hooks.slack.com/services/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',json={"text": message})
-        requests.put('http://34.208.93.80:5002/washrooms/90SecondNorth', json={"status": "closed for cleaning"})
-        requests.put('http://34.208.93.80:5002/echopath/washrooms/90SecondNorth', json={"status": "closed for cleaning"})
+        status_msg = "closed for cleaning"
+        handle_notifications(status_msg, battery_voltage, serial_no, "red")
     elif click_type == "DOUBLE":
-        message = '%s is active' % washroom
-        send_sms(message)
-        requests.post('https://hooks.slack.com/services/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',json={"text": message})
-        requests.put('http://34.208.93.80:5002/washrooms/90SecondNorth', json={"status": "active"})
-        requests.put('http://34.208.93.80:5002/echopath/washrooms/90SecondNorth', json={"status": "active"})
+        status_msg = "active"
+        handle_notifications(status_msg, battery_voltage, serial_no, "green")
     elif click_type == "LONG":
-        message = '%s is under service' % washroom
-        send_sms(message)
-        requests.post('https://hooks.slack.com/services/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', json={"text": message})
-        requests.put('http://34.208.93.80:5002/washrooms/90SecondNorth', json={"status": "in service"})
-        requests.put('http://34.208.93.80:5002/echopath/washrooms/90SecondNorth', json={"status": "in service"})
+        status_msg = "under service"
+        handle_notifications(status_msg, battery_voltage, serial_no, "red")
     else:
         pass
