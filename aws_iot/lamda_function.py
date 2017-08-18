@@ -52,15 +52,15 @@ logger.setLevel(logging.INFO)
 
 sns = boto3.client('sns')
 phone_numbers = ['1-617-750-4465']
-washroom = 'RushHour2Mens'
 hipchat = "https://changeagents.hipchat.com/v2/room/4036142/notification?auth_token=7ShqgwAsYQ2hJoRgwcg7FagyiHONP8gnMZep326W"
 slack = 'https://hooks.slack.com/services/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'
 loogoUrl = 'http://52.25.29.73:5002/washrooms/'
 echoPathUrl = 'http://52.25.29.73:5002/echopath/washrooms/'
+washrooms = {'G030MD037206HRE4': "RushHour2Mens", 'G030MD0232733SN8': "RushHour2Womens"}
 
 
 def handle_notifications(status_msg, battery_voltage, serial_no, color):
-    notification_msg = washroom + " is " + status_msg
+    notification_msg = washrooms.get(serial_no) + " is " + status_msg
     # sms
     for phone_number in phone_numbers:
         sns.publish(PhoneNumber=phone_number, Message=notification_msg)
@@ -74,8 +74,8 @@ def handle_notifications(status_msg, battery_voltage, serial_no, color):
     # requests.put(echoPathUrl + washroom, json={"status": "closed for cleaning"})
 
     # save in db
-    requests.put(loogoUrl + washroom, json={"aws_sno": serial_no, "battery_voltage": battery_voltage,
-                                            "status": status_msg})
+    requests.put(loogoUrl + washrooms.get(serial_no), json={"aws_sno": serial_no, "battery_voltage": battery_voltage,
+                                                            "status": status_msg})
 
 
 def lambda_handler(event, context):
