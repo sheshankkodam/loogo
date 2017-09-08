@@ -1,6 +1,7 @@
 from flask import Flask, json, request
 
 from pymongo import MongoClient
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 client = MongoClient()
@@ -18,20 +19,31 @@ def status():
     return response
 
 
-@app.route('/washrooms/', methods=['GET'])
+@app.route('/washrooms', methods=['GET', 'PUT'])
 def washrooms():
-    result = []
     db = client.loogo
-    cursor = db.washrooms.find()
+    if request.method == "GET":
+        result = []
+        cursor = db.washrooms.find()
 
-    for res in cursor:
-        result.append({
-            "name": res.get("name"),
-            "status": res.get("status")
-        })
+        for res in cursor:
+            result.append({"name": res.get("name"), "status": res.get("status")})
 
-    response = app.response_class(response=json.dumps(result), status=200, mimetype="application/json")
-    return response
+        response = app.response_class(response=json.dumps(result), status=200, mimetype="application/json")
+        return response
+
+    if request.method == 'PUT':
+        dt = datetime.now() - timedelta(hours=1)
+        db.washrooms.update({"status": "closed for cleaning", "last_modified": {"$lt": dt}},
+                            {
+                                "$set":
+                                    {
+                                        "status": "active",
+                                        "last_modified": datetime.now()
+                                    }
+                            })
+        response = app.response_class(response=json.dumps("successfully updated restroom statuses"), status=200, mimetype="application/json")
+        return response
 
 
 @app.route('/washrooms/<washroom_name>', methods=['PUT'])
@@ -49,7 +61,8 @@ def update_washroom_status(washroom_name):
                 {
                     "status": washroom_status,
                     "aws_sno": aws_sno,
-                    "battery_voltage": battery_voltage
+                    "battery_voltage": battery_voltage,
+                    "last_modified": datetime.now()
                 }
         },
         True
