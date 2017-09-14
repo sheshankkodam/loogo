@@ -56,6 +56,7 @@ hipchat = "https://changeagents.hipchat.com/v2/room/4036142/notification?auth_to
 slack = 'https://hooks.slack.com/services/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'
 loogoUrl = 'http://52.25.29.73:5002/washrooms/'
 echoPathUrl = 'http://52.25.29.73:5002/echopath/washrooms/'
+loogoameegoUrl = 'http://loogoameego.ssedev.io/restroom'
 washrooms = {'G030MD037206HRE4': "RushHour2Mens", 'G030MD0232733SN8': "RushHour2Womens",
              "G030MD039197T47D": "FinalDestination2Mens", "G030MD037225H5WR": "FinalDestination2Womens"}
 
@@ -77,6 +78,9 @@ def handle_notifications(status_msg, battery_voltage, serial_no, color):
     # save in db
     requests.put(loogoUrl + washrooms.get(serial_no), json={"aws_sno": serial_no, "battery_voltage": battery_voltage,
                                                             "status": status_msg})
+
+    # Update Loogoameego
+    requests.put(loogoameegoUrl, json={"restroomname": washrooms.get(serial_no), "status": status_msg})
 
 
 def lambda_handler(event, context):
