@@ -81,7 +81,7 @@ def handle_notifications(status_msg, battery_voltage, serial_no, color):
                                                             "status": status_msg})
 
     # Update Loogoameego
-    requests.put(loogoameegoUrl, json={"restroomname": washrooms.get(serial_no), "status": status_msg})
+    requests.put(loogoameegoUrl, data={"restroomname": washrooms.get(serial_no), "status": status_msg})
 
 
 def lambda_handler(event, context):
