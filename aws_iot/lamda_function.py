@@ -59,7 +59,7 @@ echoPathUrl = 'http://52.25.29.73:5002/echopath/washrooms/'
 loogoameegoUrl = 'http://loogoameego.ssedev.io/restroom'
 washrooms = {'G030MD037206HRE4': "RushHour2Mens", 'G030MD0232733SN8': "RushHour2Womens",
              "G030MD039197T47D": "FinalDestination2Mens", "G030MD037225H5WR": "FinalDestination2Womens",
-             "G030MD0324663W4U": "WallStreetMens"}
+             "G030MD0324663W4U": "WallStreetMens", "G030MD031397FL1N": "WallStreetWomens"}
 
 
 def handle_notifications(status_msg, battery_voltage, serial_no, color):
